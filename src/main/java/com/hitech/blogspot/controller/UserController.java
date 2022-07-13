@@ -3,6 +3,7 @@ package com.hitech.blogspot.controller;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,9 +50,10 @@ public class UserController {
 	}
 
 	@PostMapping("/")
-	public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
+	public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto,
+			@PathParam("roleId") Integer roleId) {
 		log.warn("Inside the  createUser method");
-		UserDto user = userService.createUser(userDto);
+		UserDto user = userService.createUser(userDto, roleId);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(user);
 	}
