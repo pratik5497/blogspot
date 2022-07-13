@@ -1,15 +1,19 @@
 package com.hitech.blogspot.serviceimplememtation;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.hitech.blogspot.customexceptions.ResourceNotFoundException;
 import com.hitech.blogspot.dto.UserDto;
+import com.hitech.blogspot.model.Roles;
 import com.hitech.blogspot.model.User;
+import com.hitech.blogspot.repository.RolesRepository;
 import com.hitech.blogspot.repository.UserRepository;
 import com.hitech.blogspot.service.UserService;
 
@@ -19,6 +23,10 @@ public class UserServiceImplementation implements UserService {
 	private UserRepository userRepository;
 	@Autowired
 	private ModelMapper modelMapper;
+	@Autowired
+	private RolesRepository rolesRepository;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Override
 	public UserDto getUserbyId(Integer userId) {
@@ -61,9 +69,15 @@ public class UserServiceImplementation implements UserService {
 	}
 
 	@Override
-	public UserDto createUser(UserDto userDto) {
+	public UserDto createUser(UserDto userDto, Integer roleId) {
+		Roles role = this.rolesRepository.findById(roleId)
+				.orElseThrow(() -> new ResourceNotFoundException("Role", "Role Id", roleId));
+		Set<Roles> roleSet = Set.of(role);
 
 		User user = userDtoToUser(userDto);
+		user.setRoles(roleSet);
+		String encode = this.passwordEncoder.encode(user.getPassword());
+		user.setUserPassword(encode);
 		user = userRepository.save(user);
 		return userToUserDto(user);
 

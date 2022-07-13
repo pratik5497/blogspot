@@ -13,7 +13,7 @@ public interface UserService {
 
 	public abstract void deleteUser(Integer userId);
 
-	public abstract UserDto createUser(UserDto userDto);
+	public abstract UserDto createUser(UserDto userDto, Integer roleId);
 
 	public abstract void deleteAllUsers();
 
